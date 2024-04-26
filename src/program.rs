@@ -47,11 +47,19 @@ fn join_items(items: Vec<String>, args: Args) -> String {
             return items.join(".\n") + ".";
         }
 
+        if args.json {
+            return format!("[\"{}\"]", items.join("\", \""));
+        }
+
         return items.join(". ") + ".";
     }
 
     if args.list {
         return items.join("\n");
+    }
+
+    if args.json {
+        return format!("[\"{}\"]", items.join("\", \""));
     }
 
     return items.join(" ");
