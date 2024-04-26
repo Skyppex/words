@@ -18,7 +18,7 @@ fn main() -> Result<()> {
         Some(path) => fs::read_to_string(path)?,
         None => {
             if atty::is(atty::Stream::Stdin) {
-                eprintln!("%PROGRAM% -> No input given");
+                eprintln!("words -> No input given");
                 process::exit(1);
             }
 
