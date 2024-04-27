@@ -55,4 +55,12 @@ pub struct Args {
     /// Print the result as a json list.
     #[arg(short = 'j', long, group = "format")]
     pub json: bool,
+
+    /// Remove punctuation from the output.
+    #[arg(short = 'p', long)]
+    pub no_punctuation: bool,
+
+    /// Trim whitespace from the output.
+    #[arg(short = 't', long)]
+    pub trim: bool,
 }

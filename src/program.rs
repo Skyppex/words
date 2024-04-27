@@ -26,19 +26,43 @@ pub fn run(input: String, args: Args) -> String {
         return String::new();
     }
 
+    let items = alter_output(items, args.clone());
+
     join_items(items, args)
 }
 
 fn get_items<'a>(input: String, args: Args) -> Vec<String> {
     if args.sentence {
         return input.split('.')
+            .filter(|s| s.len() != 0)
             .map(|s| s.trim().to_owned())
             .collect::<Vec<String>>();
     }
 
     return input.split_whitespace()
+        .filter(|s| s.len() != 0)
         .map(|s| s.trim().to_owned())
         .collect::<Vec<String>>();
+}
+
+fn alter_output(items: Vec<String>, args: Args) -> Vec<String> {
+    let mut items = items;
+
+    if args.no_punctuation {
+        items = items.into_iter()
+            .map(|s| s.chars()
+                .filter(|c| !c.is_ascii_punctuation())
+                .collect())
+            .collect();
+    }
+
+    if args.trim {
+        items = items.into_iter()
+            .map(|s| s.trim().to_owned())
+            .collect();
+    }
+
+    return items;
 }
 
 fn join_items(items: Vec<String>, args: Args) -> String {
