@@ -4,12 +4,12 @@ mod utils;
 
 use std::{self, fs, io::{self, Read, Result, Write}, process};
 
-use args::Args;
+use args::WordsArgs;
 use clap::Parser;
 use utils::convert_to_path;
 
 fn main() -> Result<()> {
-    let args = Args::parse();
+    let args = WordsArgs::parse();
     
     let source = convert_to_path(&args.source)?;
     let destination = convert_to_path(&args.destination)?;
