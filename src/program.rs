@@ -1,32 +1,39 @@
 use crate::args::WordsArgs;
 
 pub fn run(input: String, args: WordsArgs) -> String {
-    let input = input.replace('\r', " ").replace('\n', " ");
+    let input = input.replace(['\r', '\n'], " ");
     let mut items = get_items(input, args.clone());
-    
+
     if args.contains.is_some() {
         let contains = args.clone().contains.unwrap();
 
         if args.case_sensitive {
-            items = items.into_iter().filter(|s| s.contains(&contains)).collect();
+            items.retain(|s| s.contains(&contains));
         } else {
-            items = items.into_iter().filter(|s| s.to_lowercase().contains(&contains.to_lowercase())).collect();
+            items.retain(|s| s.to_lowercase().contains(&contains.to_lowercase()));
         }
     }
 
     if args.first.is_some() {
-        items = items.into_iter().take(args.first.unwrap().unwrap_or(1) as usize).collect();
+        items = items
+            .into_iter()
+            .take(args.first.unwrap().unwrap_or(1) as usize)
+            .collect();
     }
 
     if args.last.is_some() {
-        items = items.into_iter().rev().take(args.last.unwrap().unwrap_or(1) as usize).collect();
+        items = items
+            .into_iter()
+            .rev()
+            .take(args.last.unwrap().unwrap_or(1) as usize)
+            .collect();
     }
 
     if args.output.count {
         return items.len().to_string();
     }
 
-    if items.len() == 0 {
+    if items.is_empty() {
         return String::new();
     }
 
@@ -35,16 +42,20 @@ pub fn run(input: String, args: WordsArgs) -> String {
     join_items(items, args)
 }
 
-fn get_items<'a>(input: String, args: WordsArgs) -> Vec<String> {
+fn get_items(input: String, args: WordsArgs) -> Vec<String> {
     if args.sentence {
-        return input.split('.')
-            .filter(|s| s.len() != 0)
+        return input
+            .split('.')
+            .flat_map(|s| s.split('!'))
+            .flat_map(|s| s.split('?'))
+            .filter(|s| !s.is_empty())
             .map(|s| s.trim().to_owned())
             .collect::<Vec<String>>();
     }
 
-    return input.split_whitespace()
-        .filter(|s| s.len() != 0)
+    return input
+        .split_whitespace()
+        .filter(|s| !s.is_empty())
         .map(|s| s.trim().to_owned())
         .collect::<Vec<String>>();
 }
@@ -54,25 +65,22 @@ fn alter_output(items: Vec<String>, args: WordsArgs) -> Vec<String> {
     let output = args.output;
 
     if output.no_punctuation {
-        items = items.into_iter()
-            .map(|s| s.chars()
-                .filter(|c| !c.is_ascii_punctuation())
-                .collect())
+        items = items
+            .into_iter()
+            .map(|s| s.chars().filter(|c| !c.is_ascii_punctuation()).collect())
             .collect();
     }
 
     if output.trim {
-        items = items.into_iter()
-            .map(|s| s.trim().to_owned())
-            .collect();
+        items = items.into_iter().map(|s| s.trim().to_owned()).collect();
     }
 
-    return items;
+    items
 }
 
 fn join_items(items: Vec<String>, args: WordsArgs) -> String {
     let output = args.output;
-    
+
     if args.sentence {
         if output.list {
             return items.join(".\n") + ".";
@@ -93,10 +101,9 @@ fn join_items(items: Vec<String>, args: WordsArgs) -> String {
         return format!("[\"{}\"]", items.join("\", \""));
     }
 
-    return items.join(" ");
+    items.join(" ")
 }
 
 #[cfg(test)]
-mod tests {
-    
-}
+mod tests {}
+

@@ -75,3 +75,4 @@ pub struct Output {
     #[arg(short = 'n', long)]
     pub count: bool,
 }
+
